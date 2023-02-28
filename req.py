@@ -7,15 +7,20 @@ from data import config
 
 class Auto_request:
     def __init__(self):
-        self.link = []
-        self.auto_list = []
-        self.url = config.url
+        self.link: list = []
+        self.auto_list: list = []
+        self.url: str = config.url
 
     def requests_get(self):
+        '''Подает запрос на сайт'''
         response = requests.get(self.url)
         return bs(response.text, 'lxml')
 
-    def link_cleaning(self):
+    def link_cleaning(self) -> list:
+        '''
+        Метод чистит теги и выводит ссылки
+        изображений на автомобили по 4 шт
+        '''
         container_link = self.requests_get().findAll(class_='lazyload')
         for i in container_link:
             get_link = i.get("data-src")
@@ -23,7 +28,12 @@ class Auto_request:
                 self.link.append(get_link)
         return self.link
 
-    def auto_cleaning(self):
+    def auto_cleaning(self) -> list:
+        '''
+        -Метод создает список из словарей с данными автомобилей
+        -Ключ PRICE имеет рандомное знаечение, так как на сайте
+        нет цен на автомобили
+        '''
         container_auto = self.requests_get().findAll('div', class_='text')
         for i_auto in container_auto:
             self.auto_list.append({'AUTO': i_auto.find(class_="title").text,
@@ -39,7 +49,8 @@ class Auto_request:
         return self.auto_list
 
     def run(self):
-        with open('../Новая папка/TELEGRAM_BOT_AUTO/data/parser.json', 'w') as file:
+        '''Метод записывает все словари в файл JSON'''
+        with open('data/parser.json', 'w') as file:
             json.dump(self.auto_cleaning(), file, indent=4, ensure_ascii=False)
 
 
