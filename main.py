@@ -1,33 +1,32 @@
 import telebot
-from telebot import types
 from data import config
-import json
+from button import \
+    add_button_main_menu, \
+    add_button_auto,\
+    add_button_calendar,\
+    add_button_info_shop
 
 bot = telebot.TeleBot(config.token)
 
 
 @bot.message_handler(commands=['start'])
 def main_button(message):
-    '''Функция, которая обрабатывает кнопку START'''
-    buttons = types.InlineKeyboardMarkup(row_width=1)
-    button1 = types.InlineKeyboardButton(text='🚗Посмотреть автомобили🚗', callback_data='but1')
-    button2 = types.InlineKeyboardButton(text='🖊Записаться на TEST DRIVE🖊', callback_data='but2')
-    button3 = types.InlineKeyboardButton(text='😊Посмотреть информацию об автосалоне😊', callback_data='but3')
-    buttons.add(button1, button2, button3)
-    bot.send_message(message.chat.id, "Здравствуйте, что вы хотите сделать?", reply_markup=buttons)
+    add_button_main_menu(bot, message)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback(call):
-    with open('data\parser.json') as file:
-        data_1 = json.load(file)
     if call.data == 'but1':
-        list_auto = [i['AUTO'] for i in data_1]
-        new_menu = types.InlineKeyboardMarkup(row_width=3)
-        for i_auto in list_auto:
-            new_menu.add(types.InlineKeyboardButton(i_auto, callback_data='but4'))
-        bot.edit_message_text('Все автомобили в наличии', call.message.chat.id, call.message.message_id,
-                              reply_markup=new_menu)
+        add_button_auto(bot, call)
+    if call.data == 'but2':
+        add_button_calendar(bot, call)
+    if call.data == 'but3':
+        add_button_info_shop(bot, call)
+
+
+@bot.message_handler(commands=['but1'])
+def low_price_city_request(message):
+    bot.send_message(message.chat.id, 'Make your choice:')
 
 
 if __name__ == '__main__':

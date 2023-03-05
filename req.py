@@ -5,7 +5,7 @@ from random import randint
 from data import config
 
 
-class Auto_request:
+class AutoRequest:
     def __init__(self):
         self.link: list = []
         self.auto_list: list = []
@@ -54,5 +54,5 @@ class Auto_request:
             json.dump(self.auto_cleaning(), file, indent=4, ensure_ascii=False)
 
 
-auto = Auto_request()
+auto = AutoRequest()
 auto.run()
