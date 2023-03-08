@@ -20,6 +20,7 @@ class AutoRequest:
         '''
         Метод чистит теги и выводит ссылки
         изображений на автомобили по 4 шт
+        на каждый автомобиль
         '''
         container_link = self.requests_get().findAll(class_='lazyload')
         for i in container_link:
@@ -43,7 +44,9 @@ class AutoRequest:
                                    'FUEL': ''.join(i_auto.find(class_="props").text.split(','))[17:36],
                                    'LINK': [self.link[i:i + 4] for i in range(0, len(self.link_cleaning()), 4)]
                                    [len(self.auto_list)],
-                                   'PRICE': round(randint(2000000, 10000000), -4)
+                                   'PRICE': '{:,}'.format(
+                                   (round(randint(2000000, 10000000), -4))
+                                   ).replace(',', ' ') + ' рублей'
                                    }
                                   )
         return self.auto_list
